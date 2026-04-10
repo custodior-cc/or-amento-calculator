@@ -1265,19 +1265,44 @@ function resetForm() {
   updateTimeDisplay();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function capturarDadosInvisivel(dadosDoOrcamento) {
-    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyIIfccNIglokR3vwf8QfckBF1UKn9MnvQlVqqUc04-knme77L4PtrhJpYv2LapE3tMbQ/exec";
-    
-    fetch(URL_SCRIPT, {
-        method: 'POST',
-        mode: 'no-cors', // Mantém o processo silencioso e evita erros de trava
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dadosDoOrcamento)
+// 1. Adiciona esta função de envio no final do teu <script>
+function trackCalculation(r) {
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyIIfccNIglokR3vwf8QfckBF1UKn9MnvQlVqqUc04-knme77L4PtrhJpYv2LapE3tMbQ/exec"; 
+  
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    mode: 'no-cors', 
+    cache: 'no-cache',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      clientName: r.clientName,
+      toolType: r.svc.name,
+      complexity: r.complexity,
+      totalCost: r.opCost,
+      finalPrice: r.finalPrice,
+      profitMargin: r.profitMargin
     })
-    .then(() => console.log("Log registrado.")) // O usuário não vê isso
-    .catch(err => console.error("Erro no log"));
+  });
+}
+
+// 2. Localiza o final da tua função calculate() e adiciona a chamada:
+function calculate() {
+  // ... todo o teu código existente de cálculo ...
+  
+  // No final da função, onde já tens o lastResult montado:
+  lastResult = {
+    id, svc, qty, complexity: complexityNames[currentComplexity],
+    timeStr, laborCost, overhead, opCost, profitMargin, taxAmount,
+    finalPrice, unitPrice, marginPct, marketLabel, clientName,
+    overheadPct: p.overheadPct, taxPct: p.taxPct, profitPct: p.profitPct
+  };
+
+  // ADICIONA ESTA LINHA AQUI:
+  trackCalculation(lastResult);
+
+  const section = document.getElementById('resultSection');
+  section.classList.add('visible');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 // Init
 onAdminChange();
