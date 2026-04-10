@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sul Ferramentas — Calculadora de Orçamentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-900: #0c1f3d;
+    --blue-800: #102a52;
+    --blue-700: #163567;
+    --blue-600: #1e4587;
+    --blue-500: #2558a8;
+    --blue-400: #3a72cc;
+    --blue-300: #6b9de0;
+    --blue-200: #a8c4ed;
+    --blue-100: #dce9f8;
+    --steel-900: #0d0f12;
+    --steel-800: #14171c;
+    --steel-700: #1c2028;
+    --steel-600: #252a34;
+    --steel-500: #313846;
+    --steel-400: #4a5468;
+    --steel-300: #6b7691;
+    --steel-200: #9aa3b5;
+    --steel-100: #c8cdd8;
+    --gold: #c8971a;
+    --gold-light: #e8b830;
+    --danger: #c84040;
+    --success: #2a9d5c;
+    --white: #f0f4fa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--steel-900);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.015) 59px, rgba(255,255,255,0.015) 60px),
+      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.015) 59px, rgba(255,255,255,0.015) 60px);
+  }
+
+  .page-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 36px;
+  }
+
+  .logo-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-icon {
+    width: 52px;
+    height: 52px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo-icon svg { width: 52px; height: 52px; }
+
+  .brand-text h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .brand-text p {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--steel-300);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .header-badge {
+    background: var(--blue-800);
+    border: 1px solid var(--blue-600);
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-align: right;
+  }
+
+  .header-badge .badge-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue-300);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .header-badge .badge-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--blue-300);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  /* GRID */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steel-200);
+  }
+
+  select, input[type="number"] {
+    background: var(--steel-700);
+    border: 1px solid var(--steel-500);
+    border-radius: 4px;
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7691' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  select option { background: var(--steel-700); }
+
+  select:focus, input[type="number"]:focus { border-color: var(--blue-400); }
+
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+
+  /* COMPLEXITY SELECTOR */
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .complexity-btn {
+    background: var(--steel-700);
+    border: 1px solid var(--steel-500);
+    border-radius: 4px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .complexity-btn:hover { border-color: var(--blue-400); }
+
+  .complexity-btn.active.low { background: rgba(42,157,92,0.15); border-color: var(--success); }
+  .complexity-btn.active.medium { background: rgba(200,151,26,0.15); border-color: var(--gold); }
+  .complexity-btn.active.high { background: rgba(200,64,64,0.15); border-color: var(--danger); }
+
+  .complexity-icon {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .complexity-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: block;
+  }
+
+  .complexity-sub {
+    font-size: 11px;
+    color: var(--steel-300);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* TIME DISPLAY */
+  .time-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--steel-700);
+    border: 1px solid var(--steel-500);
+    border-radius: 4px;
+    padding: 10px 14px;
+  }
+
+  .time-pill {
+    background: var(--blue-800);
+    border: 1px solid var(--blue-600);
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue-200);
+    white-space: nowrap;
+  }
+
+  .time-note {
+    font-size: 13px;
+    color: var(--steel-200);
+  }
+
+  /* CALCULATE BUTTON */
+  .calc-btn {
+    width: 100%;
+    background: var(--blue-600);
+    border: none;
+    border-radius: 4px;
+    color: var(--white);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 15px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .calc-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .calc-btn:hover { background: var(--blue-500); }
+  .calc-btn:hover::before { transform: translateX(100%); }
+  .calc-btn:active { transform: scale(0.99); }
+
+  /* RESULT CARD */
+  .result-section {
+    display: none;
+    margin-top: 32px;
+  }
+
+  .result-section.visible { display: block; }
+
+  .result-card {
+    background: var(--steel-800);
+    border: 1px solid var(--steel-600);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .result-header {
+    background: var(--blue-800);
+    border-bottom: 1px solid var(--blue-700);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .result-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-200);
+  }
+
+  .result-id {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    color: var(--blue-300);
+  }
+
+  .result-body {
+    padding: 24px;
+  }
+
+  .result-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .meta-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--steel-300);
+  }
+
+  .meta-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--steel-100);
+  }
+
+  /* COST BREAKDOWN */
+  .breakdown {
+    background: var(--steel-700);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .breakdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+  }
+
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row:hover { background: rgba(255,255,255,0.03); }
+
+  .row-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--steel-200);
+  }
+
+  .row-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .row-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .breakdown-row.total {
+    background: rgba(30,69,135,0.3);
+    border-top: 1px solid var(--blue-700);
+    padding: 14px 16px;
+  }
+
+  .breakdown-row.total .row-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .breakdown-row.total .row-val {
+    font-size: 24px;
+    color: var(--blue-200);
+  }
+
+  /* UNIT PRICE HIGHLIGHT */
+  .unit-price-box {
+    background: rgba(30,69,135,0.2);
+    border: 1px solid var(--blue-700);
+    border-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .unit-price-label {
+    font-size: 13px;
+    color: var(--blue-300);
+    letter-spacing: 0.5px;
+  }
+
+  .unit-price-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue-100);
+  }
+
+  /* MARGIN BAR */
+  .margin-bar-wrap {
+    margin-bottom: 20px;
+  }
+
+  .margin-bar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .margin-bar-label {
+    font-size: 12px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steel-300);
+  }
+
+  .margin-pct {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-light);
+  }
+
+  .bar-track {
+    height: 6px;
+    background: var(--steel-600);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue-500), var(--gold));
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(.16,1,.3,1);
+  }
+
+  /* COMPETITIVENESS */
+  .market-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .market-tag.competitive { background: rgba(42,157,92,0.2); color: #5bcb8a; border: 1px solid rgba(42,157,92,0.4); }
+  .market-tag.premium { background: rgba(200,151,26,0.2); color: #e8c050; border: 1px solid rgba(200,151,26,0.4); }
+  .market-tag.below { background: rgba(200,64,64,0.2); color: #e88080; border: 1px solid rgba(200,64,64,0.4); }
+
+  /* ACTION BUTTONS */
+  .action-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .btn-outline {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--steel-500);
+    border-radius: 4px;
+    color: var(--steel-200);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 12px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover { background: var(--steel-700); border-color: var(--steel-400); color: var(--white); }
+
+  .btn-primary {
+    flex: 2;
+    background: var(--blue-700);
+    border: 1px solid var(--blue-500);
+    border-radius: 4px;
+    color: var(--white);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 12px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--blue-600); }
+
+  /* PRINT / CLIENT SUMMARY */
+  .summary-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .summary-modal.open { display: flex; }
+
+  .summary-box {
+    background: #fff;
+    color: #1a1a2e;
+    border-radius: 6px;
+    padding: 36px 40px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .summary-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    color: #666;
+    line-height: 1;
+  }
+
+  .summary-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid var(--blue-600);
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+
+  .summary-logo-area h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue-700);
+  }
+
+  .summary-logo-area p {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .summary-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 16px;
+  }
+
+  .summary-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+
+  .summary-info-row span:first-child { color: #555; }
+  .summary-info-row span:last-child { font-weight: 500; color: #1a1a2e; }
+
+  .summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0 0;
+    margin-top: 4px;
+  }
+
+  .summary-total-row span:first-child {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #1a1a2e;
+  }
+
+  .summary-total-row span:last-child {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--blue-700);
+  }
+
+  .summary-footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+    font-size: 11px;
+    color: #888;
+    line-height: 1.6;
+  }
+
+  .print-btn {
+    width: 100%;
+    margin-top: 20px;
+    background: var(--blue-600);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 13px;
+    text-transform: uppercase;
+  }
+
+  /* ADMIN PANEL */
+  .admin-panel {
+    background: var(--steel-800);
+    border: 1px solid var(--steel-600);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+
+  .admin-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .admin-panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .admin-toggle-icon {
+    font-size: 11px;
+    color: var(--steel-300);
+    transition: transform 0.25s;
+  }
+
+  .admin-panel.collapsed .admin-toggle-icon { transform: rotate(-90deg); }
+  .admin-panel.collapsed .admin-fields { display: none; }
+
+  .admin-fields {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 700px) { .admin-fields { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 440px) { .admin-fields { grid-template-columns: 1fr; } }
+
+  .admin-field label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--steel-300);
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .admin-field .input-prefix {
+    position: relative;
+  }
+
+  .admin-field .input-prefix span {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--steel-300);
+    pointer-events: none;
+  }
+
+  .admin-field .input-prefix input { padding-left: 28px; }
+  .admin-field .input-suffix { position: relative; }
+  .admin-field .input-suffix span {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--steel-300);
+    pointer-events: none;
+  }
+  .admin-field .input-suffix input { padding-right: 28px; }
+
+  /* COST INFO BAR */
+  .cost-info-bar {
+    background: var(--steel-800);
+    border: 1px solid var(--steel-600);
+    border-radius: 4px;
+    padding: 12px 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .cost-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cost-info-item .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--steel-300); }
+  .cost-info-item .val { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 600; color: var(--steel-100); }
+
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #fff !important; background-image: none !important; }
+    .page-wrap { display: none !important; }
+    .summary-modal {
+      display: flex !important;
+      position: static !important;
+      background: none !important;
+      padding: 0 !important;
+    }
+    .summary-box {
+      box-shadow: none !important;
+      max-height: none !important;
+      overflow: visible !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 20mm 24mm !important;
+    }
+    .summary-close,
+    .print-btn { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <header>
+    <div class="logo-block">
+      <div class="logo-icon">
+        <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="26" cy="26" r="24" fill="none" stroke="#1e4587" stroke-width="1.5"/>
+          <circle cx="26" cy="26" r="18" fill="none" stroke="#2558a8" stroke-width="1"/>
+          <!-- Gear teeth -->
+          <g stroke="#3a72cc" stroke-width="1.5" fill="none">
+            <line x1="26" y1="2" x2="26" y2="8"/>
+            <line x1="26" y1="44" x2="26" y2="50"/>
+            <line x1="2" y1="26" x2="8" y2="26"/>
+            <line x1="44" y1="26" x2="50" y2="26"/>
+            <line x1="9.37" y1="9.37" x2="13.61" y2="13.61"/>
+            <line x1="38.39" y1="38.39" x2="42.63" y2="42.63"/>
+            <line x1="42.63" y1="9.37" x2="38.39" y2="13.61"/>
+            <line x1="13.61" y1="38.39" x2="9.37" y2="42.63"/>
+          </g>
+          <!-- Blade icon -->
+          <path d="M18 26 L26 14 L34 26 L26 30 Z" fill="#2558a8" stroke="#3a72cc" stroke-width="0.8"/>
+          <circle cx="26" cy="26" r="3" fill="#6b9de0"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Sul Ferramentas</h1>
+        <p>Calculadora de Orçamentos</p>
+      </div>
+    </div>
+    <div class="header-badge">
+      <span class="badge-label">Regime Tributário</span>
+      <span class="badge-val">Simples Nacional — <span id="headerTaxDisplay">6</span>%</span>
+    </div>
+  </header>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-panel-header" onclick="toggleAdmin()">
+      <span class="admin-panel-title">⚙ Parâmetros da Operação</span>
+      <span class="admin-toggle-icon">▼</span>
+    </div>
+    <div class="admin-fields">
+      <div class="admin-field">
+        <label>Custo M.O. / Hora</label>
+        <div class="input-prefix">
+          <span>R$</span>
+          <input type="number" id="hourly_rate" value="11.25" step="0.25" min="1" onchange="onAdminChange()">
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Overhead Operacional</label>
+        <div class="input-suffix">
+          <input type="number" id="overhead_pct" value="35" step="1" min="0" max="200" onchange="onAdminChange()">
+          <span>%</span>
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Margem de Lucro</label>
+        <div class="input-suffix">
+          <input type="number" id="profit_pct" value="35" step="1" min="1" max="90" onchange="onAdminChange()">
+          <span>%</span>
+        </div>
+      </div>
+      <div class="admin-field">
+        <label>Alíquota de Imposto</label>
+        <div class="input-suffix">
+          <input type="number" id="tax_pct" value="6" step="0.5" min="0" max="50" onchange="onAdminChange()">
+          <span>%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COST REFERENCE BAR (live) -->
+  <div class="cost-info-bar">
+    <div class="cost-info-item">
+      <span class="lbl">Custo M.O. / hora</span>
+      <span class="val" id="ci-hourly">R$ 11,25</span>
+    </div>
+    <div class="cost-info-item">
+      <span class="lbl">Overhead</span>
+      <span class="val" id="ci-overhead">35%</span>
+    </div>
+    <div class="cost-info-item">
+      <span class="lbl">Custo efetivo / hora</span>
+      <span class="val" id="ci-effective">R$ 15,19</span>
+    </div>
+    <div class="cost-info-item">
+      <span class="lbl">Margem de lucro</span>
+      <span class="val" id="ci-margin">35%</span>
+    </div>
+    <div class="cost-info-item">
+      <span class="lbl">Imposto (Simples)</span>
+      <span class="val" id="ci-tax">6,00%</span>
+    </div>
+    <div class="cost-info-item">
+      <span class="lbl">CNPJ</span>
+      <span class="val">08.017.770/0001-59</span>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="section-label">Dados do Serviço</div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Nome do Cliente</label>
+      <input type="text" id="clientName" placeholder="Ex: João Silva / Madeireira X" style="background:var(--steel-700);border:1px solid var(--steel-500);border-radius:4px;color:var(--white);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 14px;outline:none;transition:border-color 0.2s;width:100%;" onfocus="this.style.borderColor='var(--blue-400)'" onblur="this.style.borderColor='var(--steel-500)'">
+    </div>
+    <div class="form-group">
+      <label>Tipo de Ferramenta</label>
+      <select id="toolType" onchange="updateDefaults()">
+        <option value="serra">Serra Circular</option>
+        <option value="fresa">Fresa</option>
+        <option value="faca">Faca Industrial</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Quantidade de Itens</label>
+      <input type="number" id="quantity" value="1" min="1" max="999" onchange="updateTimeDisplay()">
+    </div>
+  </div>
+
+  <div class="form-group" style="margin-bottom:16px;">
+    <label>Complexidade do Desgaste</label>
+    <div class="complexity-grid">
+      <div class="complexity-btn low active" onclick="selectComplexity('low', this)">
+        <span class="complexity-icon">⬤</span>
+        <span class="complexity-name" style="color:#5bcb8a">Baixo</span>
+        <span class="complexity-sub">Desgaste normal</span>
+      </div>
+      <div class="complexity-btn medium" onclick="selectComplexity('medium', this)">
+        <span class="complexity-icon">◈</span>
+        <span class="complexity-name" style="color:#e8c050">Médio</span>
+        <span class="complexity-sub">Desgaste moderado</span>
+      </div>
+      <div class="complexity-btn high" onclick="selectComplexity('high', this)">
+        <span class="complexity-icon">◆</span>
+        <span class="complexity-name" style="color:#e88080">Alto</span>
+        <span class="complexity-sub">Dentes quebrados</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group" style="margin-bottom:24px;">
+    <label>Tempo Estimado por Peça</label>
+    <div class="time-display">
+      <div class="time-pill" id="timeDisplay">20 min</div>
+      <span class="time-note" id="timeNote">Estimativa baseada no tipo e complexidade selecionados. Total: <strong id="totalTime">20 min</strong></span>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">&#9654; Calcular Orçamento</button>
+
+  <!-- RESULT -->
+  <div class="result-section" id="resultSection">
+
+    <div class="section-label" style="margin-top:32px">Resultado do Orçamento</div>
+
+    <div class="result-card">
+      <div class="result-header">
+        <h2>Análise de Precificação</h2>
+        <span class="result-id" id="resultId">ORC-0001</span>
+      </div>
+      <div class="result-body">
+
+        <div class="result-meta">
+          <div class="meta-item">
+            <span class="meta-label">Serviço</span>
+            <span class="meta-val" id="rMeta-service">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Quantidade</span>
+            <span class="meta-val" id="rMeta-qty">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Complexidade</span>
+            <span class="meta-val" id="rMeta-complexity">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tempo Total</span>
+            <span class="meta-val" id="rMeta-time">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Posicionamento</span>
+            <span class="meta-val" id="rMeta-market">—</span>
+          </div>
+        </div>
+
+        <div class="margin-bar-wrap">
+          <div class="margin-bar-top">
+            <span class="margin-bar-label">Margem de Lucro</span>
+            <span class="margin-pct" id="marginPct">0%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+        </div>
+
+        <div class="breakdown">
+          <div class="breakdown-row">
+            <span class="row-label"><span class="row-dot" style="background:#4a5468"></span>Custo de Mão de Obra</span>
+            <span class="row-val" id="r-labor">R$ 0,00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="row-label"><span class="row-dot" style="background:#313846"></span>Overhead Operacional (<span id="overheadLabelPct">35</span>%)</span>
+            <span class="row-val" id="r-overhead">R$ 0,00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="row-label"><span class="row-dot" style="background:#6b7691"></span>Custo Operacional Total</span>
+            <span class="row-val" id="r-opCost">R$ 0,00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="row-label"><span class="row-dot" style="background:#c8971a"></span>Margem de Lucro</span>
+            <span class="row-val" id="r-profit">R$ 0,00</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="row-label"><span class="row-dot" style="background:#c84040"></span>Impostos (Simples <span id="taxLabelPct">6</span>%)</span>
+            <span class="row-val" id="r-tax">R$ 0,00</span>
+          </div>
+          <div class="breakdown-row total">
+            <span class="row-label">Preço Final Sugerido</span>
+            <span class="row-val" id="r-total">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="unit-price-box">
+          <span class="unit-price-label">Preço unitário por peça</span>
+          <span class="unit-price-val" id="r-unit">R$ 0,00 / peça</span>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-outline" onclick="resetForm()">↺ Novo Cálculo</button>
+          <button class="btn-primary" onclick="openSummary()">&#9654; Gerar Resumo para o Cliente</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CLIENT SUMMARY MODAL -->
+<div class="summary-modal" id="summaryModal">
+  <div class="summary-box">
+    <button class="summary-close" onclick="closeSummary()">✕</button>
+
+    <div class="summary-logo-area">
+      <div>
+        <h2>Sul Ferramentas</h2>
+        <p>CNPJ 08.017.770/0001-59</p>
+      </div>
+    </div>
+
+    <div class="summary-title">Proposta de Orçamento</div>
+
+    <div id="summaryContent"></div>
+
+    <div class="summary-footer">
+      * Preços sujeitos a alteração conforme avaliação presencial da ferramenta.<br>
+      * Orçamento válido por 15 dias a partir da data de emissão.<br>
+      * Prazo de execução a combinar conforme agenda técnica.
+    </div>
+
+    <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
+  </div>
+</div>
+
+<script>
+const SERVICES = {
+  serra: {
+    name: 'Serra Circular',
+    timePerPiece: { low: 20, medium: 32, high: 52 },
+    market: { min: 18, max: 65 }
+  },
+  fresa: {
+    name: 'Fresa',
+    timePerPiece: { low: 35, medium: 58, high: 95 },
+    market: { min: 35, max: 120 }
+  },
+  faca: {
+    name: 'Faca Industrial',
+    timePerPiece: { low: 25, medium: 42, high: 68 },
+    market: { min: 25, max: 85 }
+  }
+};
+
+let currentComplexity = 'low';
+let calcCounter = 1;
+let lastResult = {};
+
+// ── Admin helpers ──────────────────────────────────────────────
+function getParams() {
+  return {
+    hourlyRate:   parseFloat(document.getElementById('hourly_rate').value)  || 11.25,
+    overheadPct:  parseFloat(document.getElementById('overhead_pct').value) || 35,
+    profitPct:    parseFloat(document.getElementById('profit_pct').value)   || 35,
+    taxPct:       parseFloat(document.getElementById('tax_pct').value)      || 6,
+  };
+}
+
+function onAdminChange() {
+  const p = getParams();
+  const eff = p.hourlyRate * (1 + p.overheadPct / 100);
+  document.getElementById('ci-hourly').textContent    = fmt(p.hourlyRate);
+  document.getElementById('ci-overhead').textContent  = p.overheadPct.toFixed(1) + '%';
+  document.getElementById('ci-effective').textContent = fmt(eff);
+  document.getElementById('ci-margin').textContent    = p.profitPct.toFixed(1) + '%';
+  document.getElementById('ci-tax').textContent       = p.taxPct.toFixed(2) + '%';
+  document.getElementById('headerTaxDisplay').textContent = p.taxPct % 1 === 0 ? p.taxPct : p.taxPct.toFixed(1);
+  document.getElementById('overheadLabelPct').textContent = p.overheadPct % 1 === 0 ? p.overheadPct : p.overheadPct.toFixed(1);
+  document.getElementById('taxLabelPct').textContent = p.taxPct % 1 === 0 ? p.taxPct : p.taxPct.toFixed(1);
+}
+
+function toggleAdmin() {
+  document.getElementById('adminPanel').classList.toggle('collapsed');
+}
+
+// ── Complexity ─────────────────────────────────────────────────
+function selectComplexity(level, el) {
+  document.querySelectorAll('.complexity-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentComplexity = level;
+  updateTimeDisplay();
+}
+
+function updateDefaults() { updateTimeDisplay(); }
+
+function updateTimeDisplay() {
+  const tool = document.getElementById('toolType').value;
+  const qty  = parseInt(document.getElementById('quantity').value) || 1;
+  const svc  = SERVICES[tool];
+  const mins = svc.timePerPiece[currentComplexity];
+  const totalMins = mins * qty;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  document.getElementById('timeDisplay').textContent = mins + ' min';
+  document.getElementById('totalTime').textContent   = h > 0 ? h + 'h ' + (m > 0 ? m + 'min' : '') : totalMins + ' min';
+}
+
+function fmt(v) {
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ── Core calculation ───────────────────────────────────────────
+function calculate() {
+  const p    = getParams();
+  const tool = document.getElementById('toolType').value;
+  const qty  = parseInt(document.getElementById('quantity').value) || 1;
+  const svc  = SERVICES[tool];
+  const mins = svc.timePerPiece[currentComplexity];
+
+  const totalHours   = (mins * qty) / 60;
+  const laborCost    = totalHours * p.hourlyRate;
+  const overhead     = laborCost * (p.overheadPct / 100);
+  const opCost       = laborCost + overhead;                                // custo operacional total
+
+  // Margem sobre o preço de venda (markup correto para varejo BR)
+  const preTaxRevenue = opCost / (1 - p.profitPct / 100);                  // preço sem imposto
+  const taxRate       = p.taxPct / 100;
+  const finalPrice    = preTaxRevenue / (1 - taxRate);                     // preço final com imposto embutido
+  const taxAmount     = finalPrice * taxRate;
+  const profitMargin  = preTaxRevenue - opCost;
+  const marginPct     = Math.round((profitMargin / finalPrice) * 100);
+  const unitPrice     = finalPrice / qty;
+
+  const totalMins = mins * qty;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const timeStr = h > 0 ? h + 'h ' + (m > 0 ? m + 'min' : '') : totalMins + 'min';
+
+  const complexityNames = { low: 'Baixo', medium: 'Médio', high: 'Alto/Dentes Quebrados' };
+
+  let marketPos = 'competitive', marketLabel = 'Competitivo';
+  if (unitPrice > svc.market.max * 0.9)  { marketPos = 'premium'; marketLabel = 'Premium'; }
+  else if (unitPrice < svc.market.min * 1.1) { marketPos = 'below';   marketLabel = 'Abaixo do mercado'; }
+
+  document.getElementById('r-labor').textContent   = fmt(laborCost);
+  document.getElementById('r-overhead').textContent = fmt(overhead);
+  document.getElementById('r-opCost').textContent   = fmt(opCost);
+  document.getElementById('r-profit').textContent   = fmt(profitMargin);
+  document.getElementById('r-tax').textContent      = fmt(taxAmount);
+  document.getElementById('r-total').textContent    = fmt(finalPrice);
+  document.getElementById('r-unit').textContent     = fmt(unitPrice) + ' / peça';
+
+  document.getElementById('marginPct').textContent         = marginPct + '%';
+  document.getElementById('barFill').style.width           = Math.min(marginPct * 1.8, 100) + '%';
+  document.getElementById('rMeta-service').textContent     = svc.name;
+  document.getElementById('rMeta-qty').textContent         = qty + (qty === 1 ? ' peça' : ' peças');
+  document.getElementById('rMeta-complexity').textContent  = complexityNames[currentComplexity];
+  document.getElementById('rMeta-time').textContent        = timeStr;
+  document.getElementById('rMeta-market').innerHTML        = `<span class="market-tag ${marketPos}">${marketLabel}</span>`;
+
+  const id = 'ORC-' + String(calcCounter).padStart(4, '0');
+  document.getElementById('resultId').textContent = id;
+  calcCounter++;
+
+  const clientName = document.getElementById('clientName').value.trim();
+
+  lastResult = {
+    id, svc, qty, complexity: complexityNames[currentComplexity],
+    timeStr, laborCost, overhead, opCost, profitMargin, taxAmount,
+    finalPrice, unitPrice, marginPct, marketLabel, clientName,
+    overheadPct: p.overheadPct, taxPct: p.taxPct, profitPct: p.profitPct
+  };
+
+  const section = document.getElementById('resultSection');
+  section.classList.add('visible');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Client summary / PDF ───────────────────────────────────────
+function openSummary() {
+  const r = lastResult;
+  if (!r.finalPrice) return;
+  const date = new Date().toLocaleDateString('pt-BR');
+  let html = `
+    ${r.clientName ? `<div class="summary-info-row"><span>Cliente</span><span>${r.clientName}</span></div>` : ''}
+    <div class="summary-info-row"><span>Número do Orçamento</span><span>${r.id}</span></div>
+    <div class="summary-info-row"><span>Data</span><span>${date}</span></div>
+    <div class="summary-info-row"><span>Serviço</span><span>${r.svc.name}</span></div>
+    <div class="summary-info-row"><span>Quantidade</span><span>${r.qty} ${r.qty === 1 ? 'peça' : 'peças'}</span></div>
+    <div class="summary-info-row"><span>Complexidade</span><span>${r.complexity}</span></div>
+    <div class="summary-info-row"><span>Tempo Estimado</span><span>${r.timeStr}</span></div>
+    <div style="height:12px"></div>
+    <div class="summary-info-row"><span>Custo de Mão de Obra</span><span>${fmt(r.laborCost)}</span></div>
+    <div class="summary-info-row"><span>Overhead Operacional (${r.overheadPct}%)</span><span>${fmt(r.overhead)}</span></div>
+    <div class="summary-info-row"><span>Custo Operacional Total</span><span>${fmt(r.opCost)}</span></div>
+    <div class="summary-info-row"><span>Margem de Lucro (${r.profitPct}%)</span><span>${fmt(r.profitMargin)}</span></div>
+    <div class="summary-info-row"><span>Impostos (Simples Nacional ${r.taxPct}%)</span><span>${fmt(r.taxAmount)}</span></div>
+    <div class="summary-total-row"><span>Valor Total</span><span>${fmt(r.finalPrice)}</span></div>
+    <div style="font-size:13px;color:#666;margin-top:6px;text-align:right">Valor por peça: ${fmt(r.unitPrice)}</div>
+  `;
+  document.getElementById('summaryContent').innerHTML = html;
+  document.getElementById('summaryModal').classList.add('open');
+}
+
+function closeSummary() {
+  document.getElementById('summaryModal').classList.remove('open');
+}
+
+function resetForm() {
+  document.getElementById('resultSection').classList.remove('visible');
+  document.getElementById('toolType').value = 'serra';
+  document.getElementById('quantity').value = 1;
+  document.getElementById('clientName').value = '';
+  selectComplexity('low', document.querySelector('.complexity-btn.low'));
+  updateTimeDisplay();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function capturarDadosInvisivel(dadosDoOrcamento) {
+    const URL_SCRIPT = "SUA_URL_DO_GOOGLE_DEPLOY_AQUI";
+    
+    fetch(URL_SCRIPT, {
+        method: 'POST',
+        mode: 'no-cors', // Mantém o processo silencioso e evita erros de trava
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dadosDoOrcamento)
+    })
+    .then(() => console.log("Log registrado.")) // O usuário não vê isso
+    .catch(err => console.error("Erro no log"));
+}
+// Init
+onAdminChange();
+updateTimeDisplay();
+</script>
+</body>
+</html>
