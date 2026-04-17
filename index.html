@@ -964,8 +964,8 @@
   <div class="form-group" style="margin-bottom:24px;">
     <label>Tempo Estimado por Peça</label>
     <div class="time-display">
-      <div class="time-pill" id="timeDisplay">20 min</div>
-      <span class="time-note" id="timeNote">Estimativa baseada no tipo e complexidade selecionados. Total: <strong id="totalTime">20 min</strong></span>
+      <div class="time-pill" id="timeDisplay">10 min</div>
+      <span class="time-note" id="timeNote">Estimativa baseada no tipo e complexidade selecionados. Total: <strong id="totalTime">10 min</strong></span>
     </div>
   </div>
 
@@ -1087,17 +1087,17 @@
 const SERVICES = {
   serra: {
     name: 'Serra Circular',
-    timePerPiece: { low: 20, medium: 32, high: 52 },
+    timePerPiece: { low: 10, medium: 20, high: 35 },
     market: { min: 18, max: 65 }
   },
   fresa: {
     name: 'Fresa',
-    timePerPiece: { low: 35, medium: 58, high: 95 },
+    timePerPiece: { low: 15, medium: 30, high: 60 },
     market: { min: 35, max: 120 }
   },
   faca: {
     name: 'Faca Industrial',
-    timePerPiece: { low: 25, medium: 42, high: 68 },
+    timePerPiece: { low: 20, medium: 40, high: 60 },
     market: { min: 25, max: 85 }
   }
 };
