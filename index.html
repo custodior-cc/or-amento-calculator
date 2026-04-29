@@ -65,8 +65,17 @@
   /* ── HEADER / NAV ── */
   header{background:var(--header-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 24px}
   .header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
-  .logo-wrap{display:flex;align-items:center;gap:12px;text-decoration:none}
-  .logo-img{height:38px;width:auto}
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaço entre a logo e o texto */
+    text-decoration: none;
+  }
+  .logo-img {
+    height: 100px; /* Ajuste a altura conforme necessário */
+    width: auto;
+    display: block;
+  }
   .logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;letter-spacing:.04em;color:#fff;line-height:1}
   .logo-sub{font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow',sans-serif;font-weight:600}
   nav{display:flex;align-items:center;gap:4px}
@@ -410,10 +419,11 @@
 <!-- HEADER -->
 <header class="no-print">
   <div class="header-inner">
-    <a href="https://sulferramentas.com" class="logo-wrap">
+<a href="https://sulferramentas.com" class="logo-wrap">
+      <img src="logo.png" alt="Sul Ferramentas" class="logo-img">
       <div>
-        <div class="logo-text">SUL FERRAMENTAS</div>
-        <div class="logo-sub">Soluções em Corte &amp; Afiação CNC</div>
+        <div class="logo-text"></div>
+        <div class="logo-sub"></div>
       </div>
     </a>
     <nav>
@@ -1122,16 +1132,17 @@ function buildPrintDoc(r) {
   `).join('');
 
   document.getElementById('printDoc').innerHTML = `
-    <div class="ph">
-      <div>
-        <div class="ph-logo">SUL <span>FERRAMENTAS</span></div>
-        <div class="ph-sub">Afiação Técnica CNC · Feira de Santana — BA</div>
+<div class="ph">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="logo.png" alt="Logo" style="height: 80px; width: auto;">
+        <div>
+          <div class="ph-logo"><span></span></div>
+          <div class="ph-sub">Soluções em Corte &amp; Afiação</div>
+        </div>
       </div>
       <div class="ph-right">
-        <strong style="font-size:16px">${r.numOrc}</strong><br/>
-        Data: ${r.date}<br/>
-        CNPJ: 08.017.770/0001-59<br/>
-        (75) 98172-0735
+        CNPJ 08.017.770/0001-59<br>
+        Feira de Santana — BA
       </div>
     </div>
     <h4>Dados do Cliente</h4>
