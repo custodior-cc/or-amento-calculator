@@ -566,18 +566,20 @@
 
         <div class="field">
           <label>Serviço a Realizar</label>
-          <select id="tipoFerramenta">
-            <option value="Afiação — Serra Circular">Afiação — Serra Circular</option>
-            <option value="Afiação — Fresa de Perfil">Afiação — Fresa de Perfil</option>
-            <option value="Afiação — Faca Industrial">Afiação — Faca Industrial</option>
-            <option value="Afiação — Broca">Afiação — Broca</option>
-            <option value="Afiação — Disco Diamantado">Afiação — Disco Diamantado</option>
-            <option value="Afiação — Fresa de Topo">Afiação — Fresa de Topo</option>
-            <option value="Afiação — Lâmina de Serra">Afiação — Lâmina de Serra</option>
-            <option value="Repastilhamento">Repastilhamento</option>
-            <option value="Retificação">Retificação</option>
-            <option value="Outro">Outro</option>
-          </select>
+          <div style="position:relative">
+            <input type="text" id="servicoBusca" placeholder="Digite código ou nome do serviço..." autocomplete="off"
+              oninput="filtrarServicos(this.value)" onfocus="mostrarLista()" onblur="setTimeout(fecharLista,200)"
+              style="padding-right:36px"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text3);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <div id="servicoLista" style="display:none;position:absolute;z-index:200;width:100%;max-height:220px;overflow-y:auto;background:var(--surface);border:1px solid var(--border2);border-radius:8px;box-shadow:var(--shadow);margin-top:4px"></div>
+          </div>
+          <input type="hidden" id="tipoFerramenta"/>
+          <input type="hidden" id="servicoCodigo" value=""/>
+          <input type="hidden" id="servicoPrecoSistema" value="0"/>
+          <div id="precoSistemaBox" style="display:none;margin-top:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:12px;align-items:center;justify-content:space-between">
+            <span style="color:var(--text2)">Preço atual no sistema &nbsp;<span id="codigoTag" style="font-family:'JetBrains Mono',monospace;color:var(--text3);font-size:11px"></span></span>
+            <strong id="precoSistemaValor" style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:13px"></strong>
+          </div>
         </div>
 
         <div class="field-row">
@@ -895,6 +897,7 @@ function updateDiariasDisplay() {
 let itemSeq = 0;
 function addItem() {
   const tipo   = document.getElementById('tipoFerramenta').value;
+  if (!tipo) { alert('Selecione um serviço da lista antes de adicionar.'); return; }
   const horas  = parseFloat(document.getElementById('horasServico').value) || 1;
   const pessoas= parseInt(document.getElementById('pessoasEquipe').value) || 1;
   const obs    = document.getElementById('obsItem').value;
@@ -1260,8 +1263,86 @@ function resetForm() {
   lastResult = null;
 }
 
+// ── SEARCH UI ──
+let SERVICOS = []; // carregado do Sheets
+
+async function carregarServicos() {
+  const input = document.getElementById('servicoBusca');
+  input.placeholder = 'Carregando serviços...';
+  input.disabled = true;
+  try {
+    const res  = await fetch(APPS_SCRIPT_URL + '?action=getServicos');
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error);
+    SERVICOS = json.data;
+    input.placeholder = 'Digite código ou nome do serviço...';
+    input.disabled = false;
+  } catch(err) {
+    input.placeholder = 'Erro ao carregar serviços — recarregue a página';
+    console.error('Erro getServicos:', err);
+  }
+}
+
+function mostrarLista() {
+  filtrarServicos(document.getElementById('servicoBusca').value);
+}
+function fecharLista() {
+  document.getElementById('servicoLista').style.display = 'none';
+}
+
+function filtrarServicos(q) {
+  const lista  = document.getElementById('servicoLista');
+  const termo  = q.trim().toUpperCase();
+  const itens  = termo.length === 0
+    ? SERVICOS.slice(0, 60)
+    : SERVICOS.filter(s => s.c.includes(termo) || s.d.toUpperCase().includes(termo)).slice(0, 80);
+
+  if (!SERVICOS.length) {
+    lista.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--text3)">Aguardando carregamento...</div>';
+    lista.style.display = 'block';
+    return;
+  }
+  if (!itens.length) {
+    lista.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--text3)">Nenhum serviço encontrado.</div>';
+    lista.style.display = 'block';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  itens.forEach(s => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;transition:background .1s';
+    div.innerHTML = `<span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-right:8px">${s.c}</span>${s.d}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green);white-space:nowrap;flex-shrink:0">R$\u00a0${s.v.toFixed(2).replace('.',',')}</span>`;
+    div.addEventListener('mouseenter', () => div.style.background = 'var(--surface2)');
+    div.addEventListener('mouseleave', () => div.style.background = '');
+    div.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // evita blur antes do click
+      selecionarServico(s.c, s.d, s.v);
+    });
+    frag.appendChild(div);
+  });
+
+  lista.innerHTML = '';
+  lista.appendChild(frag);
+  lista.style.display = 'block';
+}
+
+function selecionarServico(codigo, descricao, preco) {
+  document.getElementById('servicoBusca').value    = descricao;
+  document.getElementById('tipoFerramenta').value  = descricao;
+  document.getElementById('servicoCodigo').value   = codigo;
+  document.getElementById('servicoPrecoSistema').value = preco;
+  document.getElementById('servicoLista').style.display = 'none';
+
+  const box = document.getElementById('precoSistemaBox');
+  box.style.display = 'flex';
+  document.getElementById('codigoTag').textContent      = '#' + codigo;
+  document.getElementById('precoSistemaValor').textContent = 'R$ ' + preco.toFixed(2).replace('.', ',');
+}
+
 // ── INIT ──
 (function init() {
+  carregarServicos();
   const saved = localStorage.getItem('sf_theme') || 'dark';
   const lbl = document.getElementById('themeLabel');
   if (lbl) lbl.textContent = saved === 'light' ? 'Escuro' : 'Claro';
